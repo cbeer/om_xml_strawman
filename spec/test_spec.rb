@@ -25,6 +25,8 @@ describe 'om stuff' do
       t.element_g :path => '//element_g' do |g|
         g.element_h
       end
+
+      t.element_a_ref :ref => :element_a, :path => '//element_a[@attr="123"]'
     end
     
     attr_accessor :ng_xml
@@ -35,6 +37,10 @@ describe 'om stuff' do
                      <element_a>
                        <nested_element>value</nested_element>
                        <element_g>1</element_g>
+                     </element_a>
+
+                     <element_a attr="123">
+                       <nested_element>value 2</nested_element>
                      </element_a>
                      <element_b>b_value</element_b>
                      <repeated_element_c>c_value1</repeated_element_c>
@@ -91,6 +97,11 @@ eos
   it "should have wildcard paths" do
     subject.element_g.length.should == 3
     subject.element_g.element_h.first.content.should == "h value"
+  end
+
+  it "should have refs" do
+    subject.element_a_ref.nested_element.length.should == 1
+    subject.element_a_ref.nested_element.first.content.should == "value 2"
   end
 
   it "should have setters" do
