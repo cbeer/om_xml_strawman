@@ -3,11 +3,13 @@ module OM::XML
     attr_reader :name
     attr_reader :terms
     attr_reader :parent
+    attr_reader :options
 
     def initialize parent, name, *args, &block
       @name = name
       @terms = {}
       @parent = parent
+      @options = args.first || {}
 
       in_edit_context do
         yield(self) if block_given?
@@ -20,8 +22,16 @@ module OM::XML
       @edit_context = false
     end
 
+    def parent_xpath
+      @parent_xpath ||= self.parent.xpath
+    end
+
     def xpath
-      [self.parent.xpath, name].flatten.compact.join("/")
+      [parent_xpath, local_xpath].flatten.compact.join("/")
+    end
+
+    def local_xpath
+      options[:path] || name
     end
     
     def method_missing method, *args, &block 

@@ -17,6 +17,14 @@ describe 'om stuff' do
       end
 
       t.nonexistent_element_e
+
+      t.element_f do |f|
+        f.attr :path => '@attr'
+      end
+
+      t.element_g :path => '//element_g' do |g|
+        g.element_h
+      end
     end
     
     attr_accessor :ng_xml
@@ -26,6 +34,7 @@ describe 'om stuff' do
                    <root>
                      <element_a>
                        <nested_element>value</nested_element>
+                       <element_g>1</element_g>
                      </element_a>
                      <element_b>b_value</element_b>
                      <repeated_element_c>c_value1</repeated_element_c>
@@ -35,10 +44,15 @@ describe 'om stuff' do
                      <repeated_and_nested_element_d>
                        <nested_element>value</nested_element>
                        <nested_element>value2</nested_element>
+                       <element_g>
+                         <element_h>h value</element_h>
+                       </element_g>
                      </repeated_and_nested_element_d>
                      <repeated_and_nested_element_d>
+                       <element_g>2</element_g>
                        <nested_element>value3</nested_element>
                      </repeated_and_nested_element_d>
+                     <element_f attr="attr_value" />
                      </root>
 eos
   }
@@ -64,7 +78,19 @@ eos
 
   it "should have repeated and nestedaccessors" do
     subject.repeated_and_nested_element_d.nested_element.map { |x| x.content }.should include("value", "value2", "value3")
-    subject.repeated_and_nested_element_d.first.nested_element.first.content.should == "value"
+    subject.repeated_and_nested_element_d.nested_element.first.content.should == "value"
+  end
+
+  it "should have attr accessors" do
+    subject.element_f.attr.first.content.should == "attr_value"
+
+    subject.element_f.attr.first.content = 'new_attr_value'
+    subject.element_f.attr.first.content.should == "new_attr_value"
+  end
+
+  it "should have wildcard paths" do
+    subject.element_g.length.should == 3
+    subject.element_g.element_h.first.content.should == "h value"
   end
 
   it "should have setters" do

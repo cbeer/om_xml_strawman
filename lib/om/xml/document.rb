@@ -98,13 +98,22 @@ module OM::XML::Document
     
     def method_missing name, *args, &block
       if terminology.key? name
-        nodes.map { |x| x.send(name, *args, &block).nodes }.flatten
+        TermSet.new document, self, name
+        # nodes.map { |x| x.send(name, *args, &block).nodes }.flatten
       else
         super
       end
     end
 
-    delegate :each, :to => :nodes
+    def to_s
+      content
+    end
+
+    def inspect
+      "#<#{self.class.to_s} @parent=#{parent.inspect} @term=#{term.inspect}>"
+    end
+
+    delegate :each, :length, :to => :nodes
   end
 
   class Term
@@ -120,6 +129,7 @@ module OM::XML::Document
       @node = node
     end
 
+    delegate :xpath, :to => :parent
     delegate :content, :content=, :to => :node
     #delegate :to_s, :to => :content
 
@@ -133,6 +143,14 @@ module OM::XML::Document
 
     def terminology
       parent.terminology
+    end
+
+    def to_s
+      content
+    end
+
+    def inspect
+      "#<#{self.class.to_s} @parent=#{parent.inspect} @term=#{term.inspect} content=#{content.strip}>"
     end
 
   end
