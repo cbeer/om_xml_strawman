@@ -8,7 +8,6 @@ module OM::XML::Document
   included do
     class <<self
       attr_reader :terminology
-      attr_accessor :ng_xml
     end
   end
 
@@ -58,6 +57,10 @@ module OM::XML::Document
 
   def load_data data
     @ng_xml = Nokogiri::XML data
+  end
+
+  def ng_xml
+    @ng_xml
   end
 
 

@@ -85,7 +85,9 @@ module OM::XML
 
   class TermRef < Term
     def ref
-      parent.send(options[:ref])
+      elements = Array(options[:ref])
+
+      elements.inject(parent) { |memo, mtd| memo.send(mtd) }
     end
 
     def key? term
